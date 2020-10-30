@@ -54,7 +54,7 @@ var GenerateServerCertificateCmd = &cobra.Command{
 			return err
 		}
 
-		nextSerial, err := certserial.GetNextSerial()
+		nextSerial, err := certserial.GetNextSerial(fmt.Sprintf("server:%s", domain))
 		if err != nil {
 			return err
 		}

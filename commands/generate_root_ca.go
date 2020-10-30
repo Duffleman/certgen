@@ -6,6 +6,7 @@ import (
 	"crypto/rand"
 	"crypto/x509"
 	"crypto/x509/pkix"
+	"fmt"
 	"os"
 	"path"
 	"time"
@@ -51,7 +52,7 @@ var GenerateRootCACmd = &cobra.Command{
 			return err
 		}
 
-		nextSerial, err := certserial.GetNextSerial()
+		nextSerial, err := certserial.GetNextSerial(fmt.Sprintf("root:%s", "DFL Root CA"))
 		if err != nil {
 			return err
 		}
