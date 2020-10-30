@@ -20,17 +20,18 @@ import (
 )
 
 var clientTemplate = &x509.Certificate{
-	SerialNumber: nil,
 	Subject: pkix.Name{
 		Organization: []string{"Duffleman"},
 		Country:      []string{"GB"},
 	},
-	NotBefore:             time.Now(),
-	NotAfter:              time.Now().AddDate(DefaultLengthYears, 0, 0),
-	ExtKeyUsage:           []x509.ExtKeyUsage{x509.ExtKeyUsageClientAuth},
-	KeyUsage:              x509.KeyUsageDigitalSignature,
-	IsCA:                  false,
+	NotBefore: time.Now(),
+	NotAfter:  time.Now().AddDate(DefaultLengthYears, 0, 0),
+	KeyUsage:  x509.KeyUsageDigitalSignature,
+	ExtKeyUsage: []x509.ExtKeyUsage{
+		x509.ExtKeyUsageClientAuth,
+	},
 	BasicConstraintsValid: true,
+	IsCA:                  false,
 }
 
 var passwordForP12 string

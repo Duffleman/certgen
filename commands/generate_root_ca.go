@@ -22,7 +22,6 @@ import (
 const DefaultLengthYears = 10
 
 var rootTemplate = x509.Certificate{
-	SerialNumber: nil,
 	Subject: pkix.Name{
 		CommonName:   "DFL Root CA",
 		Country:      []string{"GB"},
@@ -30,7 +29,7 @@ var rootTemplate = x509.Certificate{
 	},
 	NotBefore: time.Now().Add(-1 * time.Second),
 	NotAfter:  time.Now().AddDate(DefaultLengthYears, 0, 0),
-	KeyUsage:  x509.KeyUsageCertSign,
+	KeyUsage:  x509.KeyUsageDigitalSignature | x509.KeyUsageCertSign,
 	ExtKeyUsage: []x509.ExtKeyUsage{
 		x509.ExtKeyUsageClientAuth,
 		x509.ExtKeyUsageServerAuth,

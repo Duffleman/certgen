@@ -12,8 +12,8 @@ import (
 )
 
 func LoadRootCA(rootDirectory string) (*x509.Certificate, *ecdsa.PrivateKey, error) {
-	certPath := path.Join(rootDirectory, "root_public.pem")
-	keyPath := path.Join(rootDirectory, "root_private.pem")
+	certPath := path.Join(rootDirectory, "root.public.pem")
+	keyPath := path.Join(rootDirectory, "root.private.pem")
 
 	if _, err := os.Stat(certPath); err != nil {
 		if os.IsNotExist(err) {
