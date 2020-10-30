@@ -29,10 +29,9 @@ var rootTemplate = x509.Certificate{
 	},
 	NotBefore: time.Now().Add(-1 * time.Second),
 	NotAfter:  time.Now().AddDate(DefaultLengthYears, 0, 0),
-	KeyUsage:  x509.KeyUsageDigitalSignature | x509.KeyUsageCertSign,
-	ExtKeyUsage: []x509.ExtKeyUsage{
-		x509.ExtKeyUsageClientAuth,
-		x509.ExtKeyUsageServerAuth,
+	KeyUsage:  x509.KeyUsageDigitalSignature | x509.KeyUsageCertSign | x509.KeyUsageCRLSign,
+	CRLDistributionPoints: []string{
+		"https://s3-eu-west-1.amazonaws.com/crl.dfl.mn/crl.pem",
 	},
 	BasicConstraintsValid: true,
 	IsCA:                  true,
