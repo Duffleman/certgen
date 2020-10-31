@@ -13,6 +13,7 @@ import (
 
 	"certgen/lib/certserial"
 	"certgen/lib/filesys"
+	"certgen/lib/template"
 
 	"github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"
@@ -20,12 +21,8 @@ import (
 )
 
 var certificateTemplate = &x509.Certificate{
-	Subject: pkix.Name{
-		Organization: []string{"Duffleman"},
-		Country:      []string{"GB"},
-	},
+	Subject:   pkix.Name{},
 	NotBefore: time.Now(),
-	NotAfter:  time.Now().AddDate(DefaultLengthYears, 0, 0),
 	KeyUsage:  x509.KeyUsageDigitalSignature,
 	ExtKeyUsage: []x509.ExtKeyUsage{
 		x509.ExtKeyUsageClientAuth,
@@ -56,6 +53,11 @@ var GenerateServerCertificateCmd = &cobra.Command{
 			return err
 		}
 
+		certInfo, err := template.LoadInfoFromTemplate()
+		if err != nil {
+			return err
+		}
+
 		nextSerial, err := certserial.GetNextSerial(fmt.Sprintf("server:%s", domain))
 		if err != nil {
 			return err
@@ -65,7 +67,11 @@ var GenerateServerCertificateCmd = &cobra.Command{
 
 		certificateTemplate.SerialNumber = nextSerial
 		certificateTemplate.Subject.CommonName = domain
+		certificateTemplate.Subject.Country = certInfo.RootCA.Country
+		certificateTemplate.Subject.Organization = certInfo.RootCA.Organisation
 		certificateTemplate.DNSNames = []string{domain}
+
+		certificateTemplate.NotAfter = time.Now().AddDate(certInfo.CertificateExpiryYears, 0, 0)
 
 		// private key stuff
 		keyPath := path.Join(directory, fmt.Sprintf("%s.private", domain))

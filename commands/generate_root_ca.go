@@ -13,6 +13,7 @@ import (
 
 	"certgen/lib/certserial"
 	"certgen/lib/filesys"
+	"certgen/lib/template"
 
 	"github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"
@@ -21,18 +22,10 @@ import (
 
 const DefaultLengthYears = 10
 
-var rootTemplate = x509.Certificate{
-	Subject: pkix.Name{
-		CommonName:   "DFL Root CA",
-		Country:      []string{"GB"},
-		Organization: []string{"Duffleman"},
-	},
-	NotBefore: time.Now().Add(-1 * time.Second),
-	NotAfter:  time.Now().AddDate(DefaultLengthYears, 0, 0),
-	KeyUsage:  x509.KeyUsageDigitalSignature | x509.KeyUsageCertSign | x509.KeyUsageCRLSign,
-	CRLDistributionPoints: []string{
-		"https://s3-eu-west-1.amazonaws.com/crl.dfl.mn/crl.pem",
-	},
+var rootTemplate = &x509.Certificate{
+	Subject:               pkix.Name{},
+	NotBefore:             time.Now().Add(-1 * time.Second),
+	KeyUsage:              x509.KeyUsageDigitalSignature | x509.KeyUsageCertSign | x509.KeyUsageCRLSign,
 	BasicConstraintsValid: true,
 	IsCA:                  true,
 }
@@ -50,6 +43,11 @@ var GenerateRootCACmd = &cobra.Command{
 			return err
 		}
 
+		certInfo, err := template.LoadInfoFromTemplate()
+		if err != nil {
+			return err
+		}
+
 		nextSerial, err := certserial.GetNextSerial(fmt.Sprintf("root:%s", "DFL Root CA"))
 		if err != nil {
 			return err
@@ -58,6 +56,14 @@ var GenerateRootCACmd = &cobra.Command{
 		logrus.Infof("Using serial %s", nextSerial)
 
 		rootTemplate.SerialNumber = nextSerial
+		rootTemplate.Subject.CommonName = certInfo.RootCA.CommonName
+		rootTemplate.Subject.Country = certInfo.RootCA.Country
+		rootTemplate.Subject.Organization = certInfo.RootCA.Organisation
+		if len(certInfo.CRLURLs) > 0 {
+			rootTemplate.CRLDistributionPoints = certInfo.CRLURLs
+		}
+
+		rootTemplate.NotAfter = time.Now().AddDate(certInfo.CertificateExpiryYears, 0, 0)
 
 		// private key stuff
 		keyPath := path.Join(directory, "root.private")
@@ -80,7 +86,7 @@ var GenerateRootCACmd = &cobra.Command{
 		// public key stuff
 		certPath := path.Join(directory, "root.public")
 
-		certBytes, err := x509.CreateCertificate(rand.Reader, &rootTemplate, &rootTemplate, private.Public(), private)
+		certBytes, err := x509.CreateCertificate(rand.Reader, rootTemplate, rootTemplate, private.Public(), private)
 		if err != nil {
 			return err
 		}
