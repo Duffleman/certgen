@@ -1,4 +1,4 @@
-package certserial
+package app
 
 import (
 	"bufio"
@@ -13,17 +13,19 @@ import (
 	"time"
 
 	"certgen/lib/cher"
-
-	"github.com/spf13/viper"
 )
 
-var filename = "serial_history.txt"
+type CertificateType string
 
-func GetNextSerial(name string) (*big.Int, error) {
-	rootDirectory := viper.GetString("SECERTS_ROOT_DIR")
-	serialFileName := path.Join(rootDirectory, filename)
+const (
+	RootCA             CertificateType = "root_ca"
+	ServerCertificate  CertificateType = "server_certificate"
+	ClientCertificiate CertificateType = "client_certificate"
+	CRL                CertificateType = "certificate_revocation"
+)
 
-	history, err := loadHistory(serialFileName)
+func (a *App) getNextSerial(certType CertificateType, name string) (*big.Int, error) {
+	history, err := a.loadSerialFile()
 	if err != nil {
 		return nil, err
 	}
@@ -41,21 +43,18 @@ func GetNextSerial(name string) (*big.Int, error) {
 		}
 	}
 
-	err = writeHistory(serialFileName, next, name)
-	if err != nil {
-		return nil, err
-	}
-
 	return next, nil
 }
 
-func loadHistory(serialFileName string) (map[string]struct{}, error) {
-	if _, err := os.Stat(serialFileName); err != nil {
+func (a *App) loadSerialFile() (map[string]struct{}, error) {
+	serialFilePath := path.Join(a.RootDirectory, "serial_history.txt")
+
+	if _, err := os.Stat(serialFilePath); err != nil {
 		if !os.IsNotExist(err) {
 			return nil, err
 		}
 
-		err = ioutil.WriteFile(serialFileName, []byte{}, 0644)
+		err = ioutil.WriteFile(serialFilePath, []byte{}, 0644)
 		if err != nil {
 			return nil, err
 		}
@@ -63,7 +62,7 @@ func loadHistory(serialFileName string) (map[string]struct{}, error) {
 		return map[string]struct{}{}, nil
 	}
 
-	file, err := os.Open(serialFileName)
+	file, err := os.Open(serialFilePath)
 	if err != nil {
 		return nil, err
 	}
@@ -85,7 +84,7 @@ func loadHistory(serialFileName string) (map[string]struct{}, error) {
 
 		if prefix {
 			return nil, cher.New("line_too_long", cher.M{
-				"path": serialFileName,
+				"path": serialFilePath,
 			})
 		}
 
@@ -101,8 +100,10 @@ func loadHistory(serialFileName string) (map[string]struct{}, error) {
 	return set, nil
 }
 
-func writeHistory(serialFileName string, next *big.Int, name string) error {
-	f, err := os.OpenFile(serialFileName, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
+func (a *App) writeSerialFile(next *big.Int, key string) error {
+	serialFilePath := path.Join(a.RootDirectory, "serial_history.txt")
+
+	f, err := os.OpenFile(serialFilePath, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
 	if err != nil {
 		return err
 	}
@@ -110,7 +111,7 @@ func writeHistory(serialFileName string, next *big.Int, name string) error {
 
 	now := time.Now().Format(time.RFC3339)
 
-	if _, err := f.WriteString(fmt.Sprintf("%s:%s:%s\n", next.String(), now, name)); err != nil {
+	if _, err := f.WriteString(fmt.Sprintf("%s:%s:%s\n", next.String(), now, key)); err != nil {
 		return err
 	}
 

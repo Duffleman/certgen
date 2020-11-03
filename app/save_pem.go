@@ -1,20 +1,21 @@
-package filesys
+package app
 
 import (
 	"encoding/pem"
-	"errors"
 	"fmt"
 	"os"
 	"strings"
+
+	"certgen/lib/cher"
 )
 
-func SavePEM(certType, path string, bytes []byte) error {
+func (a *App) savePEM(pemType, path string, bytes []byte) error {
 	if !strings.HasSuffix(path, ".pem") {
 		path = fmt.Sprintf("%s.pem", path)
 	}
 
 	if _, err := os.Stat(path); err == nil || os.IsExist(err) {
-		return errors.New("certificate_already_exists")
+		return cher.New("certificate_already_exists", cher.M{"path": path})
 	} else if !os.IsNotExist(err) {
 		return err
 	}
@@ -23,7 +24,7 @@ func SavePEM(certType, path string, bytes []byte) error {
 	if err != nil {
 		return err
 	}
-	if err = pem.Encode(certOut, &pem.Block{Type: certType, Bytes: bytes}); err != nil {
+	if err = pem.Encode(certOut, &pem.Block{Type: pemType, Bytes: bytes}); err != nil {
 		return err
 	}
 	return certOut.Close()

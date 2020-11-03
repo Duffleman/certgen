@@ -1,10 +1,12 @@
 package main
 
 import (
+	"encoding/json"
 	"fmt"
 	"os"
 
 	"certgen/commands"
+	"certgen/lib/cher"
 
 	"github.com/spf13/viper"
 )
@@ -14,7 +16,6 @@ func init() {
 
 	commands.RootCmd.AddCommand(commands.VersionCmd)
 	commands.RootCmd.AddCommand(commands.GenerateRootCACmd)
-	commands.RootCmd.AddCommand(commands.GenerateServerCertificateCmd)
 	commands.RootCmd.AddCommand(commands.GenerateClientCertificateCmd)
 	commands.RootCmd.AddCommand(commands.CreateCRLFileCmd)
 }
@@ -24,7 +25,17 @@ func main() {
 	viper.AutomaticEnv()
 
 	if err := commands.RootCmd.Execute(); err != nil {
-		fmt.Printf("certgen: %s\n", err)
+		if c, ok := err.(cher.E); ok {
+			bytes, err := json.MarshalIndent(c, "", "  ")
+			if err != nil {
+				panic(err)
+			}
+
+			fmt.Println(string(bytes))
+			os.Exit(1)
+		}
+
+		fmt.Printf("%s\n", err)
 		os.Exit(1)
 	}
 }
