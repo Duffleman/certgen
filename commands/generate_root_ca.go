@@ -1,9 +1,6 @@
 package commands
 
 import (
-	"certgen"
-	"path"
-
 	"certgen/app"
 
 	"github.com/spf13/cobra"
@@ -17,11 +14,9 @@ var GenerateRootCACmd = &cobra.Command{
 
 	RunE: func(cmd *cobra.Command, args []string) error {
 		rootDirectory := viper.GetString("SECERTS_ROOT_DIR")
-		directory := path.Join(rootDirectory, certgen.RootCAFolder)
 
 		app := &app.App{
-			RootDirectory:    rootDirectory,
-			WorkingDirectory: directory,
+			RootDirectory: rootDirectory,
 		}
 
 		return app.GenerateRootCA()

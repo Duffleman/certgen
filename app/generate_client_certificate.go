@@ -1,8 +1,6 @@
 package app
 
 import (
-	"fmt"
-
 	"certgen"
 )
 
@@ -51,5 +49,11 @@ func (a *App) GenerateClientCertificate(name, password string) error {
 		return err
 	}
 
-	return a.saveP12(fmt.Sprintf("%s.public", name), private, certificate, rootCA, password)
+	return a.saveP12(certgen.ClientCertificate, &saveP12Req{
+		name:        name,
+		private:     private,
+		certificate: certificate,
+		rootCA:      rootCA,
+		password:    password,
+	})
 }

@@ -25,8 +25,7 @@ var CreateCRLFileCmd = &cobra.Command{
 		rootDirectory := viper.GetString("SECERTS_ROOT_DIR")
 
 		app := &app.App{
-			RootDirectory:    rootDirectory,
-			WorkingDirectory: rootDirectory,
+			RootDirectory: rootDirectory,
 		}
 
 		return app.GenerateCRL()

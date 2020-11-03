@@ -1,9 +1,6 @@
 package commands
 
 import (
-	"path"
-
-	"certgen"
 	"certgen/app"
 
 	"github.com/spf13/cobra"
@@ -19,11 +16,9 @@ var GenerateServerCertificateCmd = &cobra.Command{
 		name := args[0]
 
 		rootDirectory := viper.GetString("SECERTS_ROOT_DIR")
-		directory := path.Join(rootDirectory, certgen.ServerCertFolder)
 
 		app := &app.App{
-			RootDirectory:    rootDirectory,
-			WorkingDirectory: directory,
+			RootDirectory: rootDirectory,
 		}
 
 		return app.GenerateServerCertificate(name)
