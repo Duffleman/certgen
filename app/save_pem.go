@@ -9,6 +9,7 @@ import (
 	"certgen/lib/cher"
 )
 
+// savePEM saves a PEM file of anything you throw at it
 func (a *App) savePEM(pemType, path string, bytes []byte) error {
 	if !strings.HasSuffix(path, ".pem") {
 		path = fmt.Sprintf("%s.pem", path)

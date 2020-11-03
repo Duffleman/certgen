@@ -8,11 +8,17 @@ import (
 	"os"
 	"path"
 
+	"certgen"
 	"certgen/lib/cher"
 )
 
-func (a *App) getCertificate(filePath string) (*x509.Certificate, error) {
-	publicPath := path.Join(a.WorkingDirectory, fmt.Sprintf("%s.pem", filePath))
+// getCertificate will load a certificate from the file system
+func (a *App) getCertificate(certType certgen.CertificateType, name string) (*x509.Certificate, error) {
+	publicPath := path.Join(
+		a.RootDirectory,
+		certgen.CertFolderMap[certType],
+		fmt.Sprintf("%s.public.pem", name),
+	)
 
 	_, err := os.Stat(publicPath)
 	if err != nil {
@@ -20,13 +26,21 @@ func (a *App) getCertificate(filePath string) (*x509.Certificate, error) {
 			return nil, err
 		}
 
-		return nil, cher.New("no_certificate_found", cher.M{"path": filePath})
+		return nil, cher.New("no_certificate_found", cher.M{"path": publicPath})
 	}
 
-	return a.loadCertificate(publicPath)
+	return a.loadCertificate(certType, name)
 }
 
-func (a *App) loadCertificate(filePath string) (*x509.Certificate, error) {
+// loadCertificate will load a certificate from the filesystem without any checks
+// such as checking if it exists
+func (a *App) loadCertificate(certType certgen.CertificateType, name string) (*x509.Certificate, error) {
+	filePath := path.Join(
+		a.RootDirectory,
+		certgen.CertFolderMap[certType],
+		fmt.Sprintf("%s.public.pem", name),
+	)
+
 	certBytes, err := ioutil.ReadFile(filePath)
 	if err != nil {
 		return nil, err

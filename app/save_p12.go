@@ -14,6 +14,8 @@ import (
 	"software.sslmate.com/src/go-pkcs12"
 )
 
+// saveP12 saves a certificate into the P12 format for browsers and computers to
+// import
 func (a *App) saveP12(filePath string, private *ecdsa.PrivateKey, certificate, rootCA *x509.Certificate, password string) error {
 	filePath = path.Join(a.WorkingDirectory, filePath)
 

@@ -1,8 +1,6 @@
 package app
 
 import (
-	"fmt"
-	"path"
 	"strings"
 
 	"certgen"
@@ -15,27 +13,27 @@ func (a *App) GenerateServerCertificate(name string) error {
 		return err
 	}
 
-	nextSerial, err := a.getNextSerial(ClientCertificiate, name)
+	nextSerial, err := a.getNextSerial(certgen.ServerCertificate, name)
 	if err != nil {
 		return err
 	}
 
-	rootCA, err := a.loadCertificate(path.Join(a.RootDirectory, certgen.RootCAFolder, "root.public.pem"))
+	rootCA, err := a.loadCertificate(certgen.RootCA, "root")
 	if err != nil {
 		return err
 	}
 
-	rootPrivate, err := a.loadPrivate(path.Join(a.RootDirectory, certgen.RootCAFolder, "root.private.pem"))
+	rootPrivate, err := a.loadPrivate(certgen.RootCA, "root")
 	if err != nil {
 		return err
 	}
 
-	private, err := a.getOrSetPrivate(fmt.Sprintf("%s.private", name))
+	private, err := a.getOrSetPrivate(certgen.ServerCertificate, name)
 	if err != nil {
 		return err
 	}
 
-	certTemplate, err := a.createTemplate(ServerCertificate, nextSerial)
+	certTemplate, err := a.createTemplate(certgen.ServerCertificate, nextSerial)
 	if err != nil {
 		return err
 	}
@@ -51,8 +49,8 @@ func (a *App) GenerateServerCertificate(name string) error {
 	certTemplate.Subject.CommonName = name
 	certTemplate.DNSNames = dnsNames
 
-	if _, err := a.createCertificate(fmt.Sprintf("%s.public", name), &CertSignReq{
-		certType:          ServerCertificate,
+	if _, err := a.createCertificate(&certSignReq{
+		certType:          certgen.ServerCertificate,
 		template:          certTemplate,
 		parent:            rootCA,
 		certificatePublic: private.Public(),

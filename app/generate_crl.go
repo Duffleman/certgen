@@ -9,23 +9,24 @@ import (
 	"certgen"
 )
 
+// GenerateCRL creates a new certificate revocation list (saved as a PEM file)
 func (a *App) GenerateCRL() error {
 	err := a.checkForInit()
 	if err != nil {
 		return err
 	}
 
-	rootCA, err := a.loadCertificate(path.Join(a.RootDirectory, certgen.RootCAFolder, "root.public.pem"))
+	rootCA, err := a.loadCertificate(certgen.RootCA, "root")
 	if err != nil {
 		return err
 	}
 
-	rootPrivate, err := a.loadPrivate(path.Join(a.RootDirectory, certgen.RootCAFolder, "root.private.pem"))
+	rootPrivate, err := a.loadPrivate(certgen.RootCA, "root")
 	if err != nil {
 		return err
 	}
 
-	nextSerial, err := a.getNextSerial(CRL, "crl")
+	nextSerial, err := a.getNextSerial(certgen.CRL, "crl")
 	if err != nil {
 		return err
 	}

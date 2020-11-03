@@ -2,7 +2,6 @@ package app
 
 import (
 	"fmt"
-	"path"
 
 	"certgen"
 )
@@ -14,35 +13,35 @@ func (a *App) GenerateClientCertificate(name, password string) error {
 		return err
 	}
 
-	nextSerial, err := a.getNextSerial(ClientCertificiate, name)
+	nextSerial, err := a.getNextSerial(certgen.ClientCertificate, name)
 	if err != nil {
 		return err
 	}
 
-	rootCA, err := a.loadCertificate(path.Join(a.RootDirectory, certgen.RootCAFolder, "root.public.pem"))
+	rootCA, err := a.loadCertificate(certgen.RootCA, "root")
 	if err != nil {
 		return err
 	}
 
-	rootPrivate, err := a.loadPrivate(path.Join(a.RootDirectory, certgen.RootCAFolder, "root.private.pem"))
+	rootPrivate, err := a.loadPrivate(certgen.RootCA, "root")
 	if err != nil {
 		return err
 	}
 
-	private, err := a.getOrSetPrivate(fmt.Sprintf("%s.private", name))
+	private, err := a.getOrSetPrivate(certgen.ClientCertificate, name)
 	if err != nil {
 		return err
 	}
 
-	certTemplate, err := a.createTemplate(ClientCertificiate, nextSerial)
+	certTemplate, err := a.createTemplate(certgen.ClientCertificate, nextSerial)
 	if err != nil {
 		return err
 	}
 
 	certTemplate.Subject.CommonName = name
 
-	certificate, err := a.createCertificate(fmt.Sprintf("%s.public", name), &CertSignReq{
-		certType:          ClientCertificiate,
+	certificate, err := a.createCertificate(&certSignReq{
+		certType:          certgen.ClientCertificate,
 		template:          certTemplate,
 		parent:            rootCA,
 		certificatePublic: private.Public(),

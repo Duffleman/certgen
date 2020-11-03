@@ -6,10 +6,14 @@ import (
 	"math/big"
 	"time"
 
+	"certgen"
 	"certgen/lib/cher"
 )
 
-func (a *App) createTemplate(certType CertificateType, serialNumber *big.Int) (*x509.Certificate, error) {
+// createTemplate will create an x509 certificate to use as a template to create
+// an actual certificate you can use. It will also fill in some key details for
+// you
+func (a *App) createTemplate(certType certgen.CertificateType, serialNumber *big.Int) (*x509.Certificate, error) {
 	now := time.Now()
 
 	base, err := loadTemplate(certType, now)
@@ -25,9 +29,11 @@ func (a *App) createTemplate(certType CertificateType, serialNumber *big.Int) (*
 	return base, nil
 }
 
-func loadTemplate(certType CertificateType, now time.Time) (*x509.Certificate, error) {
+// loadTemplate will load a raw x509 certificate with no information to use as a
+// template in x509.CreateCertificate
+func loadTemplate(certType certgen.CertificateType, now time.Time) (*x509.Certificate, error) {
 	switch certType {
-	case RootCA:
+	case certgen.RootCA:
 		return &x509.Certificate{
 			Subject:               pkix.Name{},
 			NotBefore:             now.Add(-1 * time.Second),
@@ -35,7 +41,7 @@ func loadTemplate(certType CertificateType, now time.Time) (*x509.Certificate, e
 			BasicConstraintsValid: true,
 			IsCA:                  true,
 		}, nil
-	case ServerCertificate:
+	case certgen.ServerCertificate:
 		return &x509.Certificate{
 			Subject:   pkix.Name{},
 			NotBefore: now.Add(-1 * time.Second),
@@ -46,7 +52,7 @@ func loadTemplate(certType CertificateType, now time.Time) (*x509.Certificate, e
 			BasicConstraintsValid: true,
 			IsCA:                  false,
 		}, nil
-	case ClientCertificiate:
+	case certgen.ClientCertificate:
 		return &x509.Certificate{
 			Subject:   pkix.Name{},
 			NotBefore: now.Add(-1 * time.Second),

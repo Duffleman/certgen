@@ -11,11 +11,17 @@ import (
 	"os"
 	"path"
 
+	"certgen"
 	"certgen/lib/cher"
 )
 
-func (a *App) getOrSetPrivate(filePath string) (*ecdsa.PrivateKey, error) {
-	privatePath := path.Join(a.WorkingDirectory, fmt.Sprintf("%s.pem", filePath))
+// getOrSetPrivate loads a certificate, or creates one if it cannot find one
+func (a *App) getOrSetPrivate(certType certgen.CertificateType, name string) (*ecdsa.PrivateKey, error) {
+	privatePath := path.Join(
+		a.RootDirectory,
+		certgen.CertFolderMap[certType],
+		fmt.Sprintf("%s.private.pem", name),
+	)
 
 	_, err := os.Stat(privatePath)
 	if err != nil {
@@ -23,13 +29,20 @@ func (a *App) getOrSetPrivate(filePath string) (*ecdsa.PrivateKey, error) {
 			return nil, err
 		}
 
-		return a.createPrivate(privatePath)
+		return a.createPrivate(certType, name)
 	}
 
-	return a.loadPrivate(privatePath)
+	return a.loadPrivate(certType, name)
 }
 
-func (a *App) createPrivate(filePath string) (*ecdsa.PrivateKey, error) {
+// createPrivate creates a private key, but will override one if it exists
+func (a *App) createPrivate(certType certgen.CertificateType, name string) (*ecdsa.PrivateKey, error) {
+	filePath := path.Join(
+		a.RootDirectory,
+		certgen.CertFolderMap[certType],
+		fmt.Sprintf("%s.private.pem", name),
+	)
+
 	private, err := ecdsa.GenerateKey(elliptic.P384(), rand.Reader)
 	if err != nil {
 		return nil, err
@@ -43,7 +56,14 @@ func (a *App) createPrivate(filePath string) (*ecdsa.PrivateKey, error) {
 	return private, a.savePEM("EC PRIVATE KEY", filePath, privBytes)
 }
 
-func (a *App) loadPrivate(filePath string) (*ecdsa.PrivateKey, error) {
+// loadPrivate loads private key from the file system
+func (a *App) loadPrivate(certType certgen.CertificateType, name string) (*ecdsa.PrivateKey, error) {
+	filePath := path.Join(
+		a.RootDirectory,
+		certgen.CertFolderMap[certType],
+		fmt.Sprintf("%s.private.pem", name),
+	)
+
 	keyBytes, err := ioutil.ReadFile(filePath)
 	if err != nil {
 		return nil, err

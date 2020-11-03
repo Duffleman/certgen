@@ -39,6 +39,9 @@ var folders = []string{
 	certgen.ServerCertFolder,
 }
 
+// checkForInit will check that the folder structure of the output directory is
+// properly set up, all folders exist, and the template file exists and has been
+// edited
 func (a *App) checkForInit() error {
 	if err := os.MkdirAll(a.RootDirectory, 0777); err != nil {
 		return err

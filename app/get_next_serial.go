@@ -12,19 +12,12 @@ import (
 	"path"
 	"time"
 
+	"certgen"
 	"certgen/lib/cher"
 )
 
-type CertificateType string
-
-const (
-	RootCA             CertificateType = "root_ca"
-	ServerCertificate  CertificateType = "server_certificate"
-	ClientCertificiate CertificateType = "client_certificate"
-	CRL                CertificateType = "certificate_revocation"
-)
-
-func (a *App) getNextSerial(certType CertificateType, name string) (*big.Int, error) {
+// getNextSerial gets the next serial number to issue, but does not save it yet
+func (a *App) getNextSerial(certType certgen.CertificateType, name string) (*big.Int, error) {
 	history, err := a.loadSerialFile()
 	if err != nil {
 		return nil, err
@@ -46,6 +39,7 @@ func (a *App) getNextSerial(certType CertificateType, name string) (*big.Int, er
 	return next, nil
 }
 
+// loadSerialFile loads the contents of the serial file into a map
 func (a *App) loadSerialFile() (map[string]struct{}, error) {
 	serialFilePath := path.Join(a.RootDirectory, "serial_history.txt")
 
@@ -100,6 +94,7 @@ func (a *App) loadSerialFile() (map[string]struct{}, error) {
 	return set, nil
 }
 
+// writeSerialFile writes to the serial file
 func (a *App) writeSerialFile(next *big.Int, key string) error {
 	serialFilePath := path.Join(a.RootDirectory, "serial_history.txt")
 
