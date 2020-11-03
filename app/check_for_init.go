@@ -34,8 +34,9 @@ var base = certInfo{
 }
 
 var folders = []string{
-	certgen.RootCAFolder,
 	certgen.ClientCertFolder,
+	certgen.RootCAFolder,
+	certgen.ServerCertFolder,
 }
 
 func (a *App) checkForInit() error {

@@ -7,6 +7,7 @@ import (
 var Version = semver.MustParse("0.0.1").String()
 
 const (
-	RootCAFolder     = "root_ca"
 	ClientCertFolder = "client_certs"
+	RootCAFolder     = "root_ca"
+	ServerCertFolder = "server_certs"
 )

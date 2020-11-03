@@ -1,10 +1,7 @@
 package commands
 
 import (
-	"crypto/x509"
-	"crypto/x509/pkix"
 	"path"
-	"time"
 
 	"certgen"
 	"certgen/app"
@@ -13,17 +10,6 @@ import (
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 )
-
-var clientTemplate = &x509.Certificate{
-	Subject:   pkix.Name{},
-	NotBefore: time.Now(),
-	KeyUsage:  x509.KeyUsageDigitalSignature,
-	ExtKeyUsage: []x509.ExtKeyUsage{
-		x509.ExtKeyUsageClientAuth,
-	},
-	BasicConstraintsValid: true,
-	IsCA:                  false,
-}
 
 func init() {
 	GenerateClientCertificateCmd.Flags().StringP("password", "p", "", "What should the password be?")

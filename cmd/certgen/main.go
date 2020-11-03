@@ -17,6 +17,7 @@ func init() {
 	commands.RootCmd.AddCommand(commands.VersionCmd)
 	commands.RootCmd.AddCommand(commands.GenerateRootCACmd)
 	commands.RootCmd.AddCommand(commands.GenerateClientCertificateCmd)
+	commands.RootCmd.AddCommand(commands.GenerateServerCertificateCmd)
 	commands.RootCmd.AddCommand(commands.CreateCRLFileCmd)
 }
 

@@ -41,7 +41,6 @@ func loadTemplate(certType CertificateType, now time.Time) (*x509.Certificate, e
 			NotBefore: now.Add(-1 * time.Second),
 			KeyUsage:  x509.KeyUsageDigitalSignature,
 			ExtKeyUsage: []x509.ExtKeyUsage{
-				x509.ExtKeyUsageClientAuth,
 				x509.ExtKeyUsageServerAuth,
 			},
 			BasicConstraintsValid: true,
