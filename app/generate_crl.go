@@ -3,7 +3,7 @@ package app
 import (
 	"crypto/rand"
 	"crypto/x509"
-	"path"
+	"fmt"
 	"time"
 
 	"certgen"
@@ -51,7 +51,9 @@ func (a *App) GenerateCRL() error {
 		return err
 	}
 
-	err = a.savePEM("X509 CRL", path.Join(a.RootDirectory, "crl"), crl)
+	fileName := fmt.Sprintf("%s-crl", time.Now().Format(time.RFC3339))
+
+	err = a.savePEM(certgen.CRL, fileName, pemCRL, crl)
 	if err != nil {
 		return err
 	}

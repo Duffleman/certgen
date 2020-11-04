@@ -37,12 +37,6 @@ func (a *App) getOrSetPrivate(certType certgen.CertificateType, name string) (*e
 
 // createPrivate creates a private key, but will override one if it exists
 func (a *App) createPrivate(certType certgen.CertificateType, name string) (*ecdsa.PrivateKey, error) {
-	filePath := path.Join(
-		a.RootDirectory,
-		certgen.CertFolderMap[certType],
-		fmt.Sprintf("%s.private.pem", name),
-	)
-
 	private, err := ecdsa.GenerateKey(elliptic.P384(), rand.Reader)
 	if err != nil {
 		return nil, err
@@ -53,7 +47,7 @@ func (a *App) createPrivate(certType certgen.CertificateType, name string) (*ecd
 		return nil, err
 	}
 
-	return private, a.savePEM("EC PRIVATE KEY", filePath, privBytes)
+	return private, a.savePEM(certType, name, pemPrivate, privBytes)
 }
 
 // loadPrivate loads private key from the file system

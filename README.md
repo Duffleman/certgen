@@ -6,9 +6,8 @@ A CLI tool to assist in generating and handling your own CA and certificates for
 
 I may or not may not adjust the tool in the future to work around these assumptons, but they're listed here for now.
 
-- All certificates are generated as EC certificates.
+- All certificates are generated as ECDSA certificates.
 - All private keys are `P384`
-- All organisation names are "Duffleman", and country code is "GB".
 
 ## Installation
 

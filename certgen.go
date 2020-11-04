@@ -16,6 +16,8 @@ const (
 	RootCAFolder = "root_ca"
 	// ServerCertFolder is the folder name where server certs are stored
 	ServerCertFolder = "server_certs"
+	// CRLCertFolder is the folder containing all CRLs
+	CRLCertFolder = "crls"
 )
 
 // CertificateType represents a type of certificate this tool handles
@@ -37,5 +39,5 @@ var CertFolderMap = map[CertificateType]string{
 	RootCA:            RootCAFolder,
 	ServerCertificate: ServerCertFolder,
 	ClientCertificate: ClientCertFolder,
-	CRL:               RootFolder,
+	CRL:               CRLCertFolder,
 }

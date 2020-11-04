@@ -5,8 +5,6 @@ import (
 	"crypto/ecdsa"
 	"crypto/rand"
 	"crypto/x509"
-	"fmt"
-	"path"
 
 	"certgen"
 )
@@ -22,12 +20,6 @@ type certSignReq struct {
 // createCertificate will create the x509 certificate, save it as a PEM file,
 // and ensure that the serial file has been written to
 func (a *App) createCertificate(req *certSignReq) (*x509.Certificate, error) {
-	certPath := path.Join(
-		a.RootDirectory,
-		certgen.CertFolderMap[req.certType],
-		fmt.Sprintf("%s.public", req.template.Subject.CommonName),
-	)
-
 	certBytes, err := x509.CreateCertificate(rand.Reader, req.template, req.parent, req.certificatePublic, req.parentPrivate)
 	if err != nil {
 		return nil, err
@@ -38,7 +30,7 @@ func (a *App) createCertificate(req *certSignReq) (*x509.Certificate, error) {
 		return nil, err
 	}
 
-	err = a.savePEM("CERTIFICATE", certPath, certBytes)
+	err = a.savePEM(req.certType, req.template.Subject.CommonName, pemPublic, certBytes)
 	if err != nil {
 		return cert, err
 	}
