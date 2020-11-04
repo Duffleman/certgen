@@ -5,7 +5,7 @@ import (
 )
 
 // Version of the CLI tool
-var Version = semver.MustParse("1.0.0").String()
+var Version = semver.MustParse("1.0.1").String()
 
 const (
 	// RootFolder is the folder without any additions
