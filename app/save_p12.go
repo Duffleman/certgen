@@ -29,7 +29,7 @@ func (a *App) saveP12(certType certgen.CertificateType, req *saveP12Req) error {
 	filePath := path.Join(
 		a.RootDirectory,
 		certgen.CertFolderMap[certType],
-		fmt.Sprintf("%s.public.p12", req.name),
+		fmt.Sprintf("%s.p12", req.name),
 	)
 
 	if req.password == "" {
