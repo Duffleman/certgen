@@ -7,6 +7,7 @@ import (
 	"time"
 
 	"certgen"
+	"certgen/lib/cher"
 )
 
 // GenerateCRL creates a new certificate revocation list (saved as a PEM file)
@@ -34,6 +35,10 @@ func (a *App) GenerateCRL() error {
 	revoked, err := a.getOrSetRevoked()
 	if err != nil {
 		return err
+	}
+
+	if len(revoked) == 0 {
+		return cher.New("no_certificates_to_revoke", nil)
 	}
 
 	now := time.Now()
