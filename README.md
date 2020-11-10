@@ -8,6 +8,7 @@ I may or not may not adjust the tool in the future to work around these assumpto
 
 - All certificates are generated as ECDSA certificates.
 - All private keys are `P384`
+- P12 formatted client certs must have passwords
 
 ## Installation
 
@@ -16,6 +17,10 @@ No command that produces files will override any file that already exists, it's 
 You must set the `CERTGEN_SECERTS_ROOT_DIR` so the tool knows where to save the certificates it generates.
 
 ## Usage
+
+You should always begin by generating a root CA. All other commands will fail until you have a CA saved.
+
+When you run the CA command, it'll run an initiation, some folder creation and some templating. It is required you go into your certificate folder and update the template so the tool uses your common name and expiry dates over mine.
 
 ### `generate_root_ca`
 
@@ -27,4 +32,4 @@ You must set the `CERTGEN_SECERTS_ROOT_DIR` so the tool knows where to save the 
 
 ### `generate_client_certificate`
 
-`certgen gcc computername`
+`certgen gcc computername --password {password}`
