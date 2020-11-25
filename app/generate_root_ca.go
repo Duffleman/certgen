@@ -1,6 +1,8 @@
 package app
 
-import "certgen"
+import (
+	"certgen"
+)
 
 // GenerateRootCA generates a new root CA
 func (a *App) GenerateRootCA() error {
