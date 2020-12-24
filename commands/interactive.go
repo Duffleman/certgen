@@ -36,12 +36,39 @@ var InteractiveCmd = &cobra.Command{
 
 		switch certType {
 		case RootCA:
+			_, err := confirmPrompt.Run()
+			if err != nil {
+				if err.Error() == "" {
+					return nil
+				}
+
+				return err
+			}
+
 			return app.GenerateRootCA()
 		case CRL:
+			_, err := confirmPrompt.Run()
+			if err != nil {
+				if err.Error() == "" {
+					return nil
+				}
+
+				return err
+			}
+
 			return app.GenerateCRL()
 		case Server:
 			certName, err := namePrompt.Run()
 			if err != nil {
+				return err
+			}
+
+			_, err = confirmPrompt.Run()
+			if err != nil {
+				if err.Error() == "" {
+					return nil
+				}
+
 				return err
 			}
 
@@ -54,6 +81,15 @@ var InteractiveCmd = &cobra.Command{
 
 			password, err := passwordPrompt.Run()
 			if err != nil {
+				return err
+			}
+
+			_, err = confirmPrompt.Run()
+			if err != nil {
+				if err.Error() == "" {
+					return nil
+				}
+
 				return err
 			}
 
@@ -72,7 +108,7 @@ var certificateTypesPrompt = promptui.Select{
 var namePrompt = promptui.Prompt{
 	Label: "Name",
 	Validate: func(input string) error {
-		if len(input) <= 3 {
+		if len(input) < 3 {
 			return cher.New("name_too_short", nil)
 		}
 
@@ -91,4 +127,9 @@ var passwordPrompt = promptui.Prompt{
 
 		return nil
 	},
+}
+
+var confirmPrompt = promptui.Prompt{
+	Label:     "Create certificate",
+	IsConfirm: true,
 }
