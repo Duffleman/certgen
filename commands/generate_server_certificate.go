@@ -12,6 +12,7 @@ var GenerateServerCertificateCmd = &cobra.Command{
 	Aliases: []string{"gsc"},
 	Short:   "Generate a server certificate",
 	Args:    cobra.ExactArgs(1),
+
 	RunE: func(cmd *cobra.Command, args []string) error {
 		name := args[0]
 

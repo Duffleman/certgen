@@ -14,11 +14,12 @@ import (
 func init() {
 	viper.SetDefault("SECERTS_ROOT_DIR", "/Users/duffleman/Source/infra-secrets/certificates")
 
-	commands.RootCmd.AddCommand(commands.VersionCmd)
-	commands.RootCmd.AddCommand(commands.GenerateRootCACmd)
-	commands.RootCmd.AddCommand(commands.GenerateClientCertificateCmd)
-	commands.RootCmd.AddCommand(commands.GenerateServerCertificateCmd)
 	commands.RootCmd.AddCommand(commands.CreateCRLFileCmd)
+	commands.RootCmd.AddCommand(commands.GenerateClientCertificateCmd)
+	commands.RootCmd.AddCommand(commands.GenerateRootCACmd)
+	commands.RootCmd.AddCommand(commands.GenerateServerCertificateCmd)
+	commands.RootCmd.AddCommand(commands.InteractiveCmd)
+	commands.RootCmd.AddCommand(commands.VersionCmd)
 }
 
 func main() {
