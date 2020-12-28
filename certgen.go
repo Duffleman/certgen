@@ -5,7 +5,7 @@ import (
 )
 
 // Version of the CLI tool
-var Version = semver.MustParse("1.2.0").String()
+var Version = semver.MustParse("1.3.0").String()
 
 const (
 	// RootFolder is the folder without any additions
@@ -18,6 +18,8 @@ const (
 	ServerCertFolder = "server_certs"
 	// CRLCertFolder is the folder containing all CRLs
 	CRLCertFolder = "crls"
+	// KeyPairFolder is the folder containing random key pairs
+	KeyPairFolder = "key_pairs"
 )
 
 // CertificateType represents a type of certificate this tool handles
@@ -32,6 +34,8 @@ const (
 	ClientCertificate CertificateType = "client_certificate"
 	// CRL is for certificate revocation lists
 	CRL CertificateType = "certificate_revocation"
+	// KeyPair is not for certificates, but just public/private pairs
+	KeyPair CertificateType = "key_pair"
 )
 
 // CertFolderMap maps certificate types to folders
@@ -39,5 +43,6 @@ var CertFolderMap = map[CertificateType]string{
 	RootCA:            RootCAFolder,
 	ServerCertificate: ServerCertFolder,
 	ClientCertificate: ClientCertFolder,
+	KeyPair:           KeyPairFolder,
 	CRL:               CRLCertFolder,
 }

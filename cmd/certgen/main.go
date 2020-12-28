@@ -16,6 +16,7 @@ func init() {
 
 	commands.RootCmd.AddCommand(commands.CreateCRLFileCmd)
 	commands.RootCmd.AddCommand(commands.GenerateClientCertificateCmd)
+	commands.RootCmd.AddCommand(commands.GenerateKeyPairCmd)
 	commands.RootCmd.AddCommand(commands.GenerateRootCACmd)
 	commands.RootCmd.AddCommand(commands.GenerateServerCertificateCmd)
 	commands.RootCmd.AddCommand(commands.InteractiveCmd)

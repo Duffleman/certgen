@@ -35,6 +35,7 @@ var base = certInfo{
 
 var folders = []string{
 	certgen.ClientCertFolder,
+	certgen.KeyPairFolder,
 	certgen.RootCAFolder,
 	certgen.ServerCertFolder,
 }
